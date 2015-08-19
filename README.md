@@ -1,6 +1,8 @@
 # uGUICanvasTools
 uGUI用のtoolもろもろ
 
+//TODO: 線を太くしたときの見え方を綺麗に
+
 unity 5.1.2f1
 
 ###WorldToCanvasProt.cs
