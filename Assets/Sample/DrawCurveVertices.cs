@@ -4,11 +4,6 @@ using System.Collections.Generic;
 
 public class DrawCurveVertices : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-
 	public VerticesDrawer drawer;
 
 	public float thickness = 1.0f;
@@ -18,6 +13,11 @@ public class DrawCurveVertices : MonoBehaviour {
 	public int splitNum = 100;
 
 	public Color color = Color.yellow;
+	
+	// Use this for initialization
+	void Start () {
+		
+	}
 	
 	// Update is called once per frame
 	void Update () {
@@ -29,6 +29,7 @@ public class DrawCurveVertices : MonoBehaviour {
 
 		float num = splitNum;
 		float d = 1.0f / num;
+
 		for(int i = 0; i < num; i++){
 			float x0 = d * i;
 			float y0 = curve.Evaluate(x0);
