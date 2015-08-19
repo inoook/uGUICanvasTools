@@ -26,4 +26,5 @@ quadRectで指定した形（主にピボットの調整につかう）を指定
 サンプル: canvasVerticesDrawer.unity  
 AnimationCurveの内容をCanvasへ描画している。
 
-参考 http://forum.unity3d.com/threads/custom-mesh-rendering-under-ui-canvas.265700/
+
+参考: http://forum.unity3d.com/threads/custom-mesh-rendering-under-ui-canvas.265700/
