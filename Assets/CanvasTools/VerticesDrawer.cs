@@ -44,14 +44,14 @@ public class VerticesDrawer : MonoBehaviour {
 	}
 
 	// line
-	public void DrawLine(Vector2 p0, Vector2 p1, float thickness, Color color)
+	public void DrawLine(Vector2 from, Vector2 to, float thickness, Color color)
 	{
-		List<UIVertex> lineList = GetDrawLineVertex(p0, p1, thickness, color);
+		List<UIVertex> lineList = GetDrawLineVertex(from, to, thickness, color);
 		vertexList.AddRange( lineList );
 	}
-	public void DrawLine(Vector2 p0, Vector2 p1, float thickness)
+	public void DrawLine(Vector2 from, Vector2 to, float thickness)
 	{
-		DrawLine(p0, p1, thickness, Color.white);
+		DrawLine(from, to, thickness, Color.white);
 	}
 
 	public void SetColor(Color c)
