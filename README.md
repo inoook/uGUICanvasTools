@@ -18,6 +18,7 @@ Canvas中の２つのRectTransformを繋ぐラインを描画
 
 ###VerticesDrawer.cs
 Canvasにラインなどを描画するためのDrawer  
+2000quad くらいが限界か？
 
 `public void DrawLine(Vector2 from, Vector2 to, float thickness)`  
 Debug.DrawLineのような感じで、drawer.DrawLine(from, to, thickness)で描画する。 
