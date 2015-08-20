@@ -18,7 +18,9 @@ Canvas中の２つのRectTransformを繋ぐラインを描画
 
 ###VerticesDrawer.cs
 Canvasにラインなどを描画するためのDrawer  
-2000quad くらいが限界か？
+6400quad くらいが限界か？自分の環境だとこれ以上あげていくと60fps切り始める。
+
+bufferQuadCount であらかじめ使用するquadの量をしていしておく。
 
 `public void DrawLine(Vector2 from, Vector2 to, float thickness)`  
 Debug.DrawLineのような感じで、drawer.DrawLine(from, to, thickness)で描画する。 
