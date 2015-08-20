@@ -8,35 +8,48 @@ using System.Collections.Generic;
 public class VerticesDrawer : MonoBehaviour {
 
 	private GameObject gObj;
-	private CanvasRenderer pCanvasRenderer;
+	private CanvasRenderer canvasRenderer;
 	private Material mat;
 
-	List<UIVertex> vertexList;
+	UIVertex[] uiVertexList;
+
+	int vertexCount = 0;
+	public int bufferQuadCount = 10000;
 	
 	void Awake () {
-		vertexList = new List<UIVertex>();
+
+		SetBufferQuadNum(bufferQuadCount);
+//		uiVertexList = new UIVertex[bufferQuadCount*4];
 
 		gObj = this.gameObject;
 		mat = new Material(Shader.Find("UI/Default"));
-		pCanvasRenderer = gObj.GetComponent<CanvasRenderer>();
+		canvasRenderer = gObj.GetComponent<CanvasRenderer>();
+	}
+
+	public void SetBufferQuadNum(int num)
+	{
+		if(num > 16383){
+			Debug.LogWarning("max quad cout = 16383");
+		}
+		num = Mathf.Clamp(num, 0, 16383);
+		bufferQuadCount = num;
+
+		uiVertexList = new UIVertex[bufferQuadCount*4];
 	}
 
 	public void Clear()
 	{
-		if(vertexList != null){
-			vertexList.Clear();
-		}
+		vertexCount = 0;
 
-		if(pCanvasRenderer != null){
-			pCanvasRenderer.Clear();
+		if(canvasRenderer != null){
+			canvasRenderer.Clear();
 		}
 	}
 
 	// quad
 	public void DrawQuad(Rect quadRect, float x, float y, float scaleX, float scaleY, float angle, Color color)
 	{
-		List<UIVertex> lineList = GetQuadVertex(quadRect, x, y, scaleX, scaleY, angle, color);
-		vertexList.AddRange( lineList );
+		AddQuadVertex(quadRect, x, y, scaleX, scaleY, angle, color);
 	}
 	public void DrawQuad(Rect quadRect, float x, float y, float scaleX, float scaleY, float angle)
 	{
@@ -46,8 +59,7 @@ public class VerticesDrawer : MonoBehaviour {
 	// line
 	public void DrawLine(Vector2 from, Vector2 to, float thickness, Color color)
 	{
-		List<UIVertex> lineList = GetDrawLineVertex(from, to, thickness, color);
-		vertexList.AddRange( lineList );
+		AddDrawLineVertex(from, to, thickness, color);
 	}
 	public void DrawLine(Vector2 from, Vector2 to, float thickness)
 	{
@@ -56,28 +68,38 @@ public class VerticesDrawer : MonoBehaviour {
 
 	public void SetColor(Color c)
 	{
-		pCanvasRenderer.SetColor(c);
+		canvasRenderer.SetColor(c);
 	}
 
-	public void Render()
+	/// <summary>
+	/// Render this instance.
+	/// </summary>
+	/// <returns>The draw quad count.</returns>
+	public int Render()
 	{
-		Draw(vertexList);
+		canvasRenderer.SetMaterial(mat, null);
+		canvasRenderer.SetVertices(uiVertexList, vertexCount);
+		
+		return vertexCount / 4;
 	}
-
-	public void Draw(List<UIVertex> vertexList) {
-		pCanvasRenderer.SetMaterial(mat, null);
-		pCanvasRenderer.SetVertices(vertexList);
+	/// <summary>
+	/// Gets the draw quad count.
+	/// </summary>
+	/// <returns>The draw quad count.</returns>
+	public int GetDrawQuadCount()
+	{
+		return vertexCount / 4;
 	}
 
 	#region helper
 	/// <summary>
-	/// Gets the draw line vertex.
+	/// Adds the draw line vertex.
 	/// </summary>
-	/// <returns>The draw line vertex.</returns>
 	/// <param name="p0">P0.</param>
 	/// <param name="p1">P1.</param>
 	/// <param name="thickness">Thickness.</param>
-	public List<UIVertex> GetDrawLineVertex(Vector2 p0, Vector2 p1, float thickness, Color color)
+	/// <param name="color">Color.</param>
+	public void AddDrawLineVertex(Vector2 p0, Vector2 p1, float thickness, Color color)
 	{
 		float x = p0.x;
 		float y = p0.y;
@@ -85,46 +107,49 @@ public class VerticesDrawer : MonoBehaviour {
 		Vector2 delta = p1 - p0;
 		float angle = Mathf.Atan2(delta.y, delta.x) * Mathf.Rad2Deg;
 
-		return GetLineQuadVertex(x, y, length, thickness, angle, color);
+		AddLineQuadVertex(x, y, length, thickness, angle, color);
 	}
-	public List<UIVertex> GetDrawLineVertex(Vector2 p0, Vector2 p1, float thickness)
+	public void AddDrawLineVertex(Vector2 p0, Vector2 p1, float thickness)
 	{
-		return GetDrawLineVertex(p0, p1, thickness, Color.white);
+		AddDrawLineVertex(p0, p1, thickness, Color.white);
 	}
 	
-	static Rect lineQuad = new Rect(0, -0.5f, 1.0f, 1.0f);
+	static Rect LINEQUAD = new Rect(0, -0.5f, 1.0f, 1.0f);
 	/// <summary>
-	/// Gets the line quad vertex.
+	/// Adds the line quad vertex.
 	/// </summary>
-	/// <returns>The line quad vertex.</returns>
 	/// <param name="x">The x coordinate.</param>
 	/// <param name="y">The y coordinate.</param>
 	/// <param name="length">Length.</param>
 	/// <param name="thickness">Thickness.</param>
 	/// <param name="angle">Angle.</param>
-	public List<UIVertex> GetLineQuadVertex(float x, float y, float length, float thickness, float angle, Color color)
+	/// <param name="color">Color.</param>
+	public void AddLineQuadVertex(float x, float y, float length, float thickness, float angle, Color color)
 	{
-		return GetQuadVertex(lineQuad, x, y, length, thickness, angle, color);
+		AddQuadVertex(LINEQUAD, x, y, length, thickness, angle, color);
 	}
-	public List<UIVertex> GetLineQuadVertex(float x, float y, float length, float thickness, float angle)
+	public void AddLineQuadVertex(float x, float y, float length, float thickness, float angle)
 	{
-		return GetLineQuadVertex(x, y, length, thickness, angle, Color.white);
+		AddLineQuadVertex(x, y, length, thickness, angle, Color.white);
 	}
-
+	
+	static Vector3 NORMAL = new Vector3(0,0,1); 
+	static Vector2 UV_C = new Vector2(1, 1);
+	static Vector2 UV_A = new Vector2(0, 0);
+	static Vector2 UV_B = new Vector2(0, 1);
+	static Vector2 UV_D = new Vector2(1, 0);
 	/// <summary>
-	/// Gets the quad vertex.
+	/// Adds the quad vertex.
 	/// </summary>
-	/// <returns>The quad vertex.</returns>
 	/// <param name="quadRect">Quad rect.</param>
 	/// <param name="x">The x coordinate.</param>
 	/// <param name="y">The y coordinate.</param>
 	/// <param name="scaleX">Scale x.</param>
 	/// <param name="scaleY">Scale y.</param>
 	/// <param name="angle">Angle.</param>
-	public List<UIVertex> GetQuadVertex(Rect quadRect, float x, float y, float scaleX, float scaleY, float angle, Color color)
+	/// <param name="color">Color.</param>
+	public void AddQuadVertex(Rect quadRect, float x, float y, float scaleX, float scaleY, float angle, Color color)
 	{
-		List<UIVertex> pVertexList = new List<UIVertex>();
-		
 		Vector3 a = new Vector3(quadRect.xMin, quadRect.yMax, 0);
 		Vector3 b = new Vector3(quadRect.xMax, quadRect.yMax, 0);
 		Vector3 c = new Vector3(quadRect.xMin, quadRect.yMin, 0);
@@ -132,40 +157,42 @@ public class VerticesDrawer : MonoBehaviour {
 		
 		// transform
 		Matrix4x4 mtx = Matrix4x4.TRS(new Vector3(x, y, 0), Quaternion.Euler(new Vector3(0,0,angle)), new Vector3(scaleX, scaleY, 1));
-		a = mtx.MultiplyPoint(a);
-		b = mtx.MultiplyPoint(b);
-		c = mtx.MultiplyPoint(c);
-		d = mtx.MultiplyPoint(d);
+
+		a = mtx.MultiplyPoint3x4(a);
+		b = mtx.MultiplyPoint3x4(b);
+		c = mtx.MultiplyPoint3x4(c);
+		d = mtx.MultiplyPoint3x4(d);
 		
 		// add UIVertex
 		UIVertex uiVertex = new UIVertex();
-		
-		Vector3 normal = new Vector3(0,0,1);
-		uiVertex.normal = normal;
+
+		uiVertex.normal = NORMAL;
 		uiVertex.color = color;
 		//pUIVertex.tangent = tangent;
 		
 		uiVertex.position = c;
-		uiVertex.uv0 = new Vector2(1, 1);
-		pVertexList.Add(uiVertex);
+		uiVertex.uv0 = UV_C;
+		uiVertexList[vertexCount] = uiVertex;
+		vertexCount ++;
 		
 		uiVertex.position = a;
-		uiVertex.uv0 = new Vector2(0, 0);
-		pVertexList.Add(uiVertex);
+		uiVertex.uv0 = UV_A;
+		uiVertexList[vertexCount] = uiVertex;
+		vertexCount ++;
 		
 		uiVertex.position = b;
-		uiVertex.uv0 = new Vector2(0, 1);
-		pVertexList.Add(uiVertex);
+		uiVertex.uv0 = UV_B;
+		uiVertexList[vertexCount] = uiVertex;
+		vertexCount ++;
 		
 		uiVertex.position = d;
-		uiVertex.uv0 = new Vector2(1, 0);
-		pVertexList.Add(uiVertex);
-		
-		return pVertexList;
+		uiVertex.uv0 = UV_D;
+		uiVertexList[vertexCount] = uiVertex;
+		vertexCount ++;
 	}
-	public List<UIVertex> GetQuadVertex(Rect quadRect, float x, float y, float scaleX, float scaleY, float angle)
+	public void AddQuadVertex(Rect quadRect, float x, float y, float scaleX, float scaleY, float angle)
 	{
-		return GetQuadVertex(quadRect, x, y, scaleX, scaleY, angle, Color.white);
+		AddQuadVertex(quadRect, x, y, scaleX, scaleY, angle, Color.white);
 	}
 	#endregion
 }
