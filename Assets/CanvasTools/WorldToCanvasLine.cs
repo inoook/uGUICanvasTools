@@ -21,8 +21,8 @@ public class WorldToCanvasLine : MonoBehaviour {
 	
 	// Update is called once per frame
 	void LateUpdate () {
-		Vector3 pos0 = WorldToCanvasProt.WorldToCanvasAnchoredPosition(p0.position, canvas, worldViewCam); 
-		Vector3 pos1 = WorldToCanvasProt.WorldToCanvasAnchoredPosition(p1.position, canvas, worldViewCam);
+		Vector3 pos0 = CanvasUtils.WorldToCanvasAnchoredPosition(p0.position, canvas, worldViewCam); 
+		Vector3 pos1 = CanvasUtils.WorldToCanvasAnchoredPosition(p1.position, canvas, worldViewCam);
 
 		RectTransform drawRectTrans = this.gameObject.GetComponent<RectTransform>();
 		CanvasLine.DrawLine(pos0, pos1, drawRectTrans, thickness);

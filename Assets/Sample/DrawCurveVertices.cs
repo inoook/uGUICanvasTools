@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class DrawCurveVertices : MonoBehaviour {
 
-	public VerticesDrawer drawer;
+	public CanvasQuadDrawer drawer;
 
 	public float thickness = 1.0f;
 	public AnimationCurve curve;
@@ -13,37 +13,44 @@ public class DrawCurveVertices : MonoBehaviour {
 	public int splitNum = 100;
 
 	public Color color = Color.yellow;
+
+	private Graphics graphics;
 	
 	// Use this for initialization
 	void Start () {
-		
+		graphics = new Graphics();
+		graphics.verticesDrawer = drawer;
+//		graphics.curveSmoothing = false;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-
-		drawer.Clear();
-		drawer.SetColor(color);
 
 		amp.x = Screen.width;
 
 		float num = splitNum;
 		float d = 1.0f / num;
 
-		for(int i = 0; i < num; i++){
-			float x0 = d * i;
-			float y0 = curve.Evaluate(x0);
-			
-			float x1 = d * (i+1);
-			float y1 = curve.Evaluate(x1);
+		d = Mathf.Clamp01(d);
 
-			Vector2 p0 = new Vector2(x0,y0);
-			p0.Scale(amp);
-			Vector2 p1 = new Vector2(x1,y1);
-			p1.Scale(amp);
-			drawer.DrawLine(p0, p1, thickness);
+		graphics.Clear();
+
+		for(int i = 0; i < num+1; i++){
+			float x = d * i;
+			float y = curve.Evaluate(x);
+
+			Vector3 pos = new Vector3(x,y,0);
+			pos.Scale(amp);
+
+			Color c = Color.Lerp(Color.black, color, x);
+
+			if(i == 0){
+				graphics.MoveTo(pos, c, thickness);
+			}else{
+				graphics.LineTo(pos, c, thickness);
+			}
 		}
-		
-		drawer.Render();
+		graphics.Render();
+
 	}
 }
