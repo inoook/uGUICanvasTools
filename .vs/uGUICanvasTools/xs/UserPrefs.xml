@@ -1,0 +1,31 @@
+﻿<Properties StartupConfiguration="{90D996AD-A4C6-BF8A-392E-AD38B91F5093}|">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/CanvasTools/Sample/Test/QuadTest.cs">
+    <Files>
+      <File FileName="Assets/CanvasTools/Sample/Test/QuadTest.cs" Line="36" Column="10" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="uGUICanvasTools" expanded="True">
+            <Node name="Assets" expanded="True">
+              <Node name="CanvasTools" expanded="True">
+                <Node name="Sample" expanded="True">
+                  <Node name="Test" expanded="True">
+                    <Node name="QuadTest.cs" selected="True" />
+                  </Node>
+                </Node>
+              </Node>
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="5c266d5d-9cff-493d-a412-1a0bf6c5ad86" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>
