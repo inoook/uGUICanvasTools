@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 
 /// <summary>
-/// Quad を複数描画する
+/// Quad を複数描画する 
 /// </summary>
 public class QuadTest : MonoBehaviour {
 
