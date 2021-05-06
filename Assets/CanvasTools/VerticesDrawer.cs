@@ -9,9 +9,19 @@ using System.Collections.Generic;
 /// Canvas quad drawer.
 /// </summary>
 [RequireComponent (typeof (CanvasRenderer))]
+<<<<<<< HEAD:Assets/CanvasTools/CanvasQuadDrawer.cs
 public class CanvasQuadDrawer : MaskableGraphic
 {
 	public Vector3 defaultFaceDir = -Vector3.forward;
+=======
+public class VerticesDrawer : MonoBehaviour {
+
+	private GameObject gObj;
+	private CanvasRenderer canvasRenderer;
+	private Material mat;
+
+	UIVertex[] uiVertexList;
+>>>>>>> parent of d8c896b (graphics追加):Assets/CanvasTools/VerticesDrawer.cs
 
 	int vertexCount = 0;
 	public int bufferQuadCount = 10000;
@@ -152,6 +162,7 @@ public class CanvasQuadDrawer : MaskableGraphic
 	/// <returns>The draw quad count.</returns>
 	public int Render()
 	{
+<<<<<<< HEAD:Assets/CanvasTools/CanvasQuadDrawer.cs
         this.UpdateGeometry();
 
 		return vertexCount / 4;
@@ -167,6 +178,13 @@ public class CanvasQuadDrawer : MaskableGraphic
         triangleList = triangleList_;
     }
 
+=======
+		canvasRenderer.SetMaterial(mat, null);
+		canvasRenderer.SetVertices(uiVertexList, vertexCount);
+		
+		return vertexCount / 4;
+	}
+>>>>>>> parent of d8c896b (graphics追加):Assets/CanvasTools/VerticesDrawer.cs
 	/// <summary>
 	/// Gets the draw quad count.
 	/// </summary>
@@ -342,6 +360,7 @@ public class CanvasQuadDrawer : MaskableGraphic
     /// <param name="color">Color.</param>
     public void AddQuadVertex(Rect quadRect, float x, float y, float z, float scaleX, float scaleY, float angle, Color color)
 	{
+<<<<<<< HEAD:Assets/CanvasTools/CanvasQuadDrawer.cs
         Vector3 a = new Vector3(quadRect.xMin, quadRect.yMax, 0);
         Vector3 b = new Vector3(quadRect.xMax, quadRect.yMax, 0);
         Vector3 c = new Vector3(quadRect.xMin, quadRect.yMin, 0);
@@ -349,12 +368,22 @@ public class CanvasQuadDrawer : MaskableGraphic
 
         // transform
         Matrix4x4 mtx = Matrix4x4.TRS(new Vector3(x, y, 0), Quaternion.Euler(new Vector3(0,0,angle)), new Vector3(scaleX, scaleY, 1));
+=======
+		Vector3 a = new Vector3(quadRect.xMin, quadRect.yMax, 0);
+		Vector3 b = new Vector3(quadRect.xMax, quadRect.yMax, 0);
+		Vector3 c = new Vector3(quadRect.xMin, quadRect.yMin, 0);
+		Vector3 d = new Vector3(quadRect.xMax, quadRect.yMin, 0);
+		
+		// transform
+		Matrix4x4 mtx = Matrix4x4.TRS(new Vector3(x, y, 0), Quaternion.Euler(new Vector3(0,0,angle)), new Vector3(scaleX, scaleY, 1));
+>>>>>>> parent of d8c896b (graphics追加):Assets/CanvasTools/VerticesDrawer.cs
 
         a = mtx.MultiplyPoint3x4(a);
         b = mtx.MultiplyPoint3x4(b);
         c = mtx.MultiplyPoint3x4(c);
         d = mtx.MultiplyPoint3x4(d);
 
+<<<<<<< HEAD:Assets/CanvasTools/CanvasQuadDrawer.cs
         // 0
         pointList.Add(a);
         uvList.Add(UV_A);
@@ -483,5 +512,35 @@ public class CanvasQuadDrawer : MaskableGraphic
 		//}
 	}
 
+=======
+		uiVertex.normal = NORMAL;
+		uiVertex.color = color;
+		//pUIVertex.tangent = tangent;
+		
+		uiVertex.position = c;
+		uiVertex.uv0 = UV_C;
+		uiVertexList[vertexCount] = uiVertex;
+		vertexCount ++;
+		
+		uiVertex.position = a;
+		uiVertex.uv0 = UV_A;
+		uiVertexList[vertexCount] = uiVertex;
+		vertexCount ++;
+		
+		uiVertex.position = b;
+		uiVertex.uv0 = UV_B;
+		uiVertexList[vertexCount] = uiVertex;
+		vertexCount ++;
+		
+		uiVertex.position = d;
+		uiVertex.uv0 = UV_D;
+		uiVertexList[vertexCount] = uiVertex;
+		vertexCount ++;
+	}
+	public void AddQuadVertex(Rect quadRect, float x, float y, float scaleX, float scaleY, float angle)
+	{
+		AddQuadVertex(quadRect, x, y, scaleX, scaleY, angle, Color.white);
+	}
+>>>>>>> parent of d8c896b (graphics追加):Assets/CanvasTools/VerticesDrawer.cs
 	#endregion
 }
