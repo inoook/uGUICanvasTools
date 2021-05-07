@@ -168,8 +168,10 @@ public class PointToCatmullRom : MonoBehaviour {
             }
 			//
 			if(useCatmull){
-				graphics.DrawSpline(points.ToArray(), thicknessArray, colorArray);
-			}else{
+				//graphics.DrawSpline(points.ToArray(), thicknessArray, colorArray);
+				graphics.DrawQuadraticCurve(points.ToArray(), thicknessArray, colorArray);
+            }
+            else{
 				graphics.DrawLine(points.ToArray(), thicknessArray);
 			}
 		}

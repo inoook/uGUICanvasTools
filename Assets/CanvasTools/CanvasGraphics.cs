@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class CanvasGraphics
 {
 	public enum CMD{
-		MOVE_TO, LINE_TO
+		MOVE_TO, LINE_TO, CURVE_TO
 	}
 	public List<CMD> cmds;
 	public List<Vector3> points;
@@ -88,7 +88,39 @@ public class CanvasGraphics
 		colors.Add(c);
 	}
 
-    public void Clear()
+	// https://scrapbox.io/oculusgogo/LineRenderer%E3%82%92%E3%83%99%E3%82%B8%E3%82%A7%E6%9B%B2%E7%B7%9A%E3%81%A7%E6%8F%8F%E7%94%BB%E3%81%99%E3%82%8B
+	public void QuadraticCurveTo(Vector3 cp, Vector3 end, Color c, float thickness = 1.0f)
+	{
+		Vector3 start = points[points.Count - 1];
+
+		for (int i = 0; i < 10; i++)
+		{
+			float t = (1 / 10f) * (i+1);
+			Vector3 Q0 = Vector3.Lerp(start, cp, t);
+			Vector3 Q1 = Vector3.Lerp(cp, end, t);
+			// Interpolate along line S2: Q1 - Q0
+			Vector3 pt = Vector3.Lerp(Q0, Q1, t);
+
+			LineTo(pt, c, thickness);
+		}
+	}
+
+	public void QuadraticCurveTo(Vector3 start, Vector3 cp, Vector3 end, Color c, float thickness = 1.0f)
+	{
+		// TODO: 分割数を距離に応じて可変にする
+		for (int i = 0; i < 10; i++)
+		{
+			float t = (1 / 10f) * (i + 1);
+			Vector3 Q0 = Vector3.Lerp(start, cp, t);
+			Vector3 Q1 = Vector3.Lerp(cp, end, t);
+			// Interpolate along line S2: Q1 - Q0
+			Vector3 pt = Vector3.Lerp(Q0, Q1, t);
+
+			LineTo(pt, c, thickness);
+		}
+	}
+
+	public void Clear()
 	{
 		cmds.Clear();
 		points.Clear();
@@ -195,10 +227,10 @@ public class CanvasGraphics
                 Color pre_color = colors[i-1];
 
                 CMD pre_cmd = cmds[i-1];
-                if (pre_cmd == CMD.MOVE_TO)
-                {
-                    // CMD.LINE_TO
-                    verticesDrawer.DrawLine(fromPos, toPos, thickness, color);
+				if (pre_cmd == CMD.MOVE_TO)
+				{
+					// CMD.LINE_TO
+					verticesDrawer.DrawLine(fromPos, toPos, thickness, color);
                 }else{
                     // TODO: もう少し線の繋がりが綺麗になると良いが。
                     int startIndex = i;
@@ -308,7 +340,50 @@ public class CanvasGraphics
 		}
 	}
 
-    public void DrawQuad(Rect quadRect, float x, float y, float z, float scaleX, float scaleY, float angle, Color color) {
+	public void DrawQuadraticCurve(Vector3[] points, float[] thicknesses = null, Color[] colors = null)
+    {
+		if (points.Length < 2) return;
+
+		Vector3 old = Vector3.zero;
+		Vector3 currentMid = Vector3.zero;
+		Vector3 oldMid = Vector3.zero;
+		Color color;
+		float thickness;
+		for (int i = 0; i < points.Length; i++)
+		{
+			color = colors[i];
+			thickness = thicknesses[i];
+			Vector3 pt = points[i];
+			if (i == 0)
+			{
+				currentMid = pt;
+				old = currentMid;
+				oldMid = pt;
+				MoveTo(currentMid, color, thickness);
+			}
+			else
+			{
+				currentMid = getMidInputCoords(old, pt);
+			}
+
+			QuadraticCurveTo(oldMid, old, currentMid, color, thickness);
+			old = pt;
+			oldMid = currentMid;
+		}
+
+		int endIndex = points.Length - 1;
+		color = colors[endIndex];
+		thickness = thicknesses[endIndex];
+		LineTo(points[endIndex], color, thickness);
+	}
+
+	Vector3 getMidInputCoords(Vector3 old, Vector3 current)
+	{
+		return (old + current) / 2;
+	}
+
+
+	public void DrawQuad(Rect quadRect, float x, float y, float z, float scaleX, float scaleY, float angle, Color color) {
         verticesDrawer.DrawQuad(quadRect, x, y, z, scaleX, scaleY, angle, color);
     }
 
@@ -318,40 +393,6 @@ public class CanvasGraphics
 			verticesDrawer.DrawCircle(radius, x, y, divid, color, innerRadius, scaleX, scaleY, angle);
 		}
 	}
-//
-//	public void DrawSpline(List<Vector3> points, float[] thicknesses = null)
-//	{
-//		if(points.Count < 2) return;
-//
-//		List<Vector3> pts = new List<Vector3>();
-//		pts.AddRange(points);
-//
-//		pts.Insert(0, points[0]);
-//		pts.Add(points[points.Count-1]);
-//		
-//		this.MoveTo(pts[0], m_color, m_thickness);
-//
-//		int j = 0;
-//		for(int i=0; i < pts.Count-3; i++, j++)
-//		{
-//			Vector3 p0 = pts[i+0];
-//			Vector3 p1 = pts[i+1];
-//			Vector3 p2 = pts[i+2];
-//			Vector3 p3 = pts[i+3];
-//			float d = Vector3.Distance(p3, p0) / 100;
-//
-//			//int numSegments = 5;//曲線分割数（補完する数）
-//			int numSegments = (int)(d * 2.0f)+1;
-//
-//			float fromThickness = m_thickness;
-//			float toThickness = m_thickness;
-//			if(thicknesses != null){
-//				fromThickness = thicknesses[j];
-//				toThickness = thicknesses[j+1];
-//			}
-//			splineTo(p0, p1, p2, p3, numSegments, fromThickness, toThickness);
-//		}
-//	}
 
 	private void splineTo(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, int numSegments, float fromThickness, float toThickness, Color fromColor, Color toColor)
 	{
