@@ -394,7 +394,7 @@ public class CanvasGraphics
 		}
 	}
 
-	private void splineTo(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, int numSegments, float fromThickness, float toThickness, Color fromColor, Color toColor)
+    private void splineTo(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, int numSegments, float fromThickness, float toThickness, Color fromColor, Color toColor)
 	{
 		float d = 1.0f / numSegments;
 		for(int i=0; i<numSegments; i++)
